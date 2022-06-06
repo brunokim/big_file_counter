@@ -4,7 +4,7 @@ build:
 
 run:
 	docker run \
-		--memory 50m --memory-swap 50m \
+		--memory 100m --memory-swap 100m \
 		-e FILENAME=big_file_1m.txt \
-		-e MEMORY_LIMIT=25M \
+		-e MEMORY_LIMIT=90M \
 		big_file_counter > /dev/null
