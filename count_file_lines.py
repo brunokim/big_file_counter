@@ -2,6 +2,7 @@ from collections import Counter
 from copy import copy
 from human_size import parse_size, format_size
 import io
+from runtime import memory_usage, memory_limit, memory_stats
 import sys
 from time import time
 
@@ -30,17 +31,46 @@ class LineCounter:
             # Check counter size periodically.
             if i % self.check_interval == 0:
                 self.check_counter_size()
+                self.report_memory_status(i)
         return copy(self.cnt)
 
     def check_counter_size(self) -> None:
         cnt_size = sys.getsizeof(self.cnt)
-        now = time()
-        if now > self.last_time + self.report_interval_sec:
-            print(f'counter size: {format_size(cnt_size)}, content size: {format_size(self.content_size)}', file=sys.stderr)
-            self.last_time = now
-        # This calculation makes it closer to the actual limit.
+        # This calculation makes it closer to the actual limit when the container is killed for OOM.
         if cnt_size + 2*self.content_size > self.memory_limit:
             raise MemoryError('Memory limit exceeded')
+
+    def report_memory_status(self, i: int) -> None:
+        now = time()
+        if now < self.last_time + self.report_interval_sec:
+            return
+        self.last_time = now
+
+        cnt_size = sys.getsizeof(self.cnt)
+        stats = memory_stats()
+        report = {
+            'counter size': cnt_size,
+            'content size': self.content_size,
+            'usage': memory_usage(),
+            'limit': memory_limit(),
+            'cache': stats['cache'],
+            'rss': stats['rss'],
+            'mapped file': stats['mapped_file'],
+            'swap': stats['swap'],
+            'total rss': stats['total_rss'],
+        }
+        print_report(report, print_header=(i == 0))
+
+
+def print_report(report: dict[str, int], print_header: bool = False) -> None:
+    w: int = 14
+    if print_header:
+        for metric in report:
+            print(f'{metric:>{w}} ', file=sys.stderr, end='')
+        print(file=sys.stderr)
+    for value in report.values():
+        print(f'{format_size(value):>{w}} ', file=sys.stderr, end='')
+    print(file=sys.stderr)
 
 
 def main(filename: str, memory_limit: int, report_interval: float) -> None:
