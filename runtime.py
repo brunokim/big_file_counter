@@ -3,7 +3,12 @@ import sys
 
 
 def memory_usage() -> int:
-    with open('/sys/fs/cgroup/memory/memory.usage_in_bytes') as f:
+    with open('/sys/fs/cgroup/memory/memory.memsw.usage_in_bytes') as f:
+        return int(f.read())
+
+
+def memory_max_usage() -> int:
+    with open('/sys/fs/cgroup/memory/memory.memsw.max_usage_in_bytes') as f:
         return int(f.read())
 
 
@@ -38,7 +43,7 @@ def print_report(report: dict[str, int] = None, print_header: bool = False) -> N
         'total cache': stats['total_cache'],
         'total rss': stats['total_rss'],
         'total swap': stats['total_swap'],
-        'mapped file': stats['mapped_file'],
+        'total dirty': stats['total_dirty'],
         'limit': memory_limit(),
     })
     width = max(len(key) for key in report) + 2
