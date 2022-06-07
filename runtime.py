@@ -43,7 +43,7 @@ def print_report(report: dict[str, int] = None, print_header: bool = False) -> N
         'total cache': stats['total_cache'],
         'total rss': stats['total_rss'],
         'total swap': stats['total_swap'],
-        'total dirty': stats['total_dirty'],
+        'inactive file': stats['inactive_file'],
         'limit': memory_limit(),
     })
     width = max(len(key) for key in report) + 2
