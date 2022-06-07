@@ -7,6 +7,12 @@ def memory_usage() -> int:
         return int(f.read())
 
 
+def memory_working_set() -> int:
+    usage = memory_usage()
+    inactive = memory_stats()['inactive_file']
+    return usage - inactive
+
+
 def memory_max_usage() -> int:
     with open('/sys/fs/cgroup/memory/memory.memsw.max_usage_in_bytes') as f:
         return int(f.read())
