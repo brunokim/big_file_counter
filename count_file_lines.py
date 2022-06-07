@@ -2,7 +2,7 @@ from collections import Counter
 from copy import copy
 from human_size import parse_size, format_size
 import io
-from runtime import memory_usage, memory_limit, memory_stats
+from runtime import print_report
 import sys
 from time import time
 
@@ -47,30 +47,7 @@ class LineCounter:
         self.last_time = now
 
         cnt_size = sys.getsizeof(self.cnt)
-        stats = memory_stats()
-        report = {
-            'counter size': cnt_size,
-            'content size': self.content_size,
-            'usage': memory_usage(),
-            'limit': memory_limit(),
-            'cache': stats['cache'],
-            'rss': stats['rss'],
-            'mapped file': stats['mapped_file'],
-            'swap': stats['swap'],
-            'total rss': stats['total_rss'],
-        }
-        print_report(report, print_header=(i == 0))
-
-
-def print_report(report: dict[str, int], print_header: bool = False) -> None:
-    w: int = 14
-    if print_header:
-        for metric in report:
-            print(f'{metric:>{w}} ', file=sys.stderr, end='')
-        print(file=sys.stderr)
-    for value in report.values():
-        print(f'{format_size(value):>{w}} ', file=sys.stderr, end='')
-    print(file=sys.stderr)
+        print_report({'counter size': cnt_size, 'content size': self.content_size}, print_header=(i == 0))
 
 
 def main(filename: str, memory_limit: int, report_interval: float) -> None:
