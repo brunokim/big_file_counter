@@ -39,7 +39,7 @@ SUFFIX = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB']
 
 
 def format_size(size: int) -> str:
-    suffix_pos = 0 
+    suffix_pos = 0
     while size > 1024:
         size /= 1024
         suffix_pos += 1

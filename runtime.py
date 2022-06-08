@@ -61,5 +61,3 @@ def print_report(report: dict[str, int] = None, print_header: bool = False) -> N
     for value in report.values():
         print(f'{format_size(value):>{width}} ', file=sys.stderr, end='')
     print(file=sys.stderr)
-
-
